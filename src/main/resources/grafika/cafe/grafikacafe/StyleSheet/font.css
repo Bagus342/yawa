@@ -1,0 +1,8 @@
+@font-face {
+    font-family : 'Poppins-bold',
+    src : url('Poppins-Bold.ttf');
+}
+
+.text {
+    -fx-font-family: "Poppins-bold";
+}
