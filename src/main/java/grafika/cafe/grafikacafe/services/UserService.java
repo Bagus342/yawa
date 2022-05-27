@@ -39,9 +39,20 @@ public class UserService {
                 failureMessage.setText("Password yang anda masukkan salah !");
             } else {
                 var session = this.session(username.getText());
-                User data = new User(session.name, session.role);
-                Session.setSession(data);
-                main.changeScene("admin/user");
+                if (session.role.equals("Admin")) {
+                    User data = new User(session.name, session.role);
+                    Session.setSession(data);
+                    main.changeScene("admin/user");
+                } else if (session.role.equals("Manager")){
+                    User data = new User(session.name, session.role);
+                    Session.setSession(data);
+                    main.changeScene("manager/menu");
+                } else {
+                    User data = new User(session.name, session.role);
+                    Session.setSession(data);
+                    main.changeScene("kasir/transaksi");
+                }
+
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());

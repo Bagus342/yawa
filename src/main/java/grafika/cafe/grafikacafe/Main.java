@@ -27,8 +27,8 @@ public class Main extends Application {
         try {
             Parent pane = FXMLLoader.load(getClass().getResource(fxml+".fxml"));
             stg.getScene().setRoot(pane);
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
+        } catch (Exception e) {
+            System.out.println(e.getCause());
         }
     }
 

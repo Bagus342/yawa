@@ -6,14 +6,14 @@ public class Session {
 
     public static void setSession(User user) {
         Preferences preferences = Preferences.userRoot();
-        preferences.put("name", user.name);
-        preferences.put("role", user.role);
+        preferences.put("session_name", user.name);
+        preferences.put("session_role", user.role);
     }
 
     public static User getSession() {
         Preferences preferences = Preferences.userRoot();
-        var name = preferences.get("name", "String");
-        var role = preferences.get("role", "String");
+        var name = preferences.get("session_name", "String");
+        var role = preferences.get("session_role", "String");
         return new User(name, role);
     }
 
