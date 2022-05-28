@@ -118,7 +118,7 @@ public class TransaksiController implements Initializable {
 
     public void setMenuItem() {
         connection = MysqlConnection.Connector();
-        String query = "SELECT nama_menu FROM menu WHERE kategori = ?";
+        String query = "SELECT name FROM menu WHERE category = ?";
         menuItem.clear();
         try {
             preparedStatement = connection.prepareStatement(query);
@@ -126,7 +126,7 @@ public class TransaksiController implements Initializable {
             resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()) {
-                menuItem.add(resultSet.getString("nama_menu"));
+                menuItem.add(resultSet.getString("name"));
             }
             menu.setItems(menuItem);
             preparedStatement.close();
@@ -139,35 +139,33 @@ public class TransaksiController implements Initializable {
 
     public void addChart(ActionEvent event) {
         connection = MysqlConnection.Connector();
-        String query = "SELECT * FROM menu WHERE nama_menu = ?";
-        String pesanan = "INSERT INTO pesanan (menu, quantity, subtotal, kode_pesanan) VALUES (?,?,?,?)";
+        String query = "SELECT * FROM menu WHERE name = ?";
+        String pesanan = "INSERT INTO pesanan (kode_pesanan, menu, quantity, subtotal, tanggal) VALUES (?,?,?,?,?)";
         try {
             preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, menu.getValue());
             resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 var quantityValue = Double.parseDouble(quantity.getText());
-                var priceMenu = resultSet.getDouble("harga");
-                var subTotal = priceValue * quantityValue;
-                Connection connection3 = SqliteConnection.Connector();
+                var priceMenu = resultSet.getDouble("price");
+                var subTotal = priceMenu * quantityValue;
+                Connection connection3 = MysqlConnection.Connector();
                 PreparedStatement preparedStatement3 = connection3.prepareStatement(pesanan);
-                preparedStatement3.setString(1, menu.getValue());
-                preparedStatement3.setInt(2, Integer.parseInt(quantity.getText()));
-                preparedStatement3.setDouble(3, subTotal);
-                preparedStatement3.setString(4, code);
+                preparedStatement3.setString(1, code);
+                preparedStatement3.setString(2, menu.getValue());
+                preparedStatement3.setInt(3, Integer.parseInt(quantity.getText()));
+                preparedStatement3.setDouble(4, subTotal);
+                preparedStatement3.setDate(5, Date.valueOf(LocalDate.now()));
                 preparedStatement3.execute();
-                preparedStatement3.close();
-                preparedStatement.close();
-                resultSet.close();
                 priceValue = priceMenu;
 //                stock(menu.getValue());
 //                setStockLabel(menu.getValue());
                 category.setValue(null);
                 menu.setValue(null);
                 quantity.setText(null);
-                table();
                 totalValue += subTotal;
                 total.setText("Rp " + String.valueOf(totalValue));
+                table();
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -206,6 +204,9 @@ public class TransaksiController implements Initializable {
                                 preparedStatement.setString(1, transaksi.getId());
                                 preparedStatement.execute();
                                 preparedStatement.close();
+                                refreshTable();
+                                totalValue -= transaksi.getSubTotal();
+                                total.setText("Rp " + String.valueOf(totalValue));
                             } catch (Exception e) {
                                 System.out.println(e.getMessage());
                             }
@@ -275,20 +276,23 @@ public class TransaksiController implements Initializable {
 
     public void catatanScene(ActionEvent event) {
         Main main = new Main();
+        main.changeScene("kasir/catatan");
     }
 
     public void submit(ActionEvent event) {
-        String transaksi = "INSERT INTO transaksi (user, pesanan, total, date, kode_transaksi) VALUES (?,?,?,?,?)";
+        String transaksi = "INSERT INTO transaksi (kode_transaksi, user, pesanan, total, tanggal) VALUES (?,?,?,?,?)";
         Connection connection1 = MysqlConnection.Connector();
         var session = Session.getSession();
+        Main main = new Main();
         try {
             PreparedStatement preparedStatement1 = connection1.prepareStatement(transaksi);
-            preparedStatement1.setString(1, session.name);
-            preparedStatement1.setString(2, code);
-            preparedStatement1.setDouble(3, totalValue);
-            preparedStatement1.setDate(4, Date.valueOf(LocalDate.now()));
-            preparedStatement1.setString(5, randomCode.getCode());
+            preparedStatement1.setString(1, randomCode.getCode());
+            preparedStatement1.setString(2, session.name);
+            preparedStatement1.setString(3, code);
+            preparedStatement1.setDouble(4, totalValue);
+            preparedStatement1.setDate(5, Date.valueOf(LocalDate.now()));
             preparedStatement1.execute();
+            main.changeScene("kasir/catatan");
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -302,6 +306,7 @@ public class TransaksiController implements Initializable {
     }
 
     public void refreshTable() {
+        chartList.clear();
         Connection connection2 = MysqlConnection.Connector();
         String query = "SELECT * FROM pesanan WHERE kode_pesanan = ?";
         try {

@@ -24,19 +24,12 @@
   <component name="DBNavigator.Project.DatabaseBrowserManager">
     <autoscroll-to-editor value="false" />
     <autoscroll-from-editor value="true" />
-    <show-object-properties value="true" />
+    <show-object-properties value="false" />
     <loaded-nodes />
   </component>
   <component name="DBNavigator.Project.DatabaseConsoleManager">
     <connection id="29d9e2c1-2a2d-4367-a499-39ac98dfbe40">
-      <console name="cafe" type="STANDARD" schema="cafe_pbo" session="Main"><![CDATA[create table pesanan(
-    id INT(10) not null AUTO_INCREMENT PRIMARY KEY,
-    kode_pesanan varchar(100),
-    menu varchar(100),
-    quantity int(10),
-    subtotal double(20,1),
-    tanggal DATE
-);]]></console>
+      <console name="cafe" type="STANDARD" schema="cafe_pbo" session="Main"><![CDATA[select * from pesanan;]]></console>
     </connection>
   </component>
   <component name="DBNavigator.Project.DatabaseFileManager">
@@ -73,7 +66,9 @@
     <diagnostics-history />
   </component>
   <component name="DBNavigator.Project.ScriptExecutionManager" clear-outputs="true">
-    <recently-used-interfaces />
+    <recently-used-interfaces>
+      <mapping database-type="MYSQL" interface-id="DEFAULT" />
+    </recently-used-interfaces>
   </component>
   <component name="DBNavigator.Project.Settings">
     <connections>

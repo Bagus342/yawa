@@ -49,7 +49,7 @@ public class MenuController implements Initializable {
     public void submitData(ActionEvent event) {
         Main main = new Main();
         connection = MysqlConnection.Connector();
-        String query = "INSERT INTO menu (nama_menu, kategori, harga, stok) values (?,?,?,?)";
+        String query = "INSERT INTO menu (name, category, price, stok) values (?,?,?,?)";
         if (name.getText().isEmpty() || kategori.getValue() == null || price.getText().isEmpty() || stock.getText().isEmpty()) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setHeaderText(null);
@@ -57,7 +57,7 @@ public class MenuController implements Initializable {
             alert.showAndWait();
         } else {
             if (update) {
-                var q_update = "UPDATE menu set nama_menu = ?, kategori = ?, harga = ?, stok = ? WHERE id = ?";
+                var q_update = "UPDATE menu set name = ?, category = ?, price = ?, stok = ? WHERE id = ?";
                 PreparedStatement preparedStatement1 = null;
                 Connection connection1 = null;
                 connection1 = MysqlConnection.Connector();

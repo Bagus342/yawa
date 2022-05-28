@@ -146,9 +146,9 @@ public class MenuController implements Initializable {
           while (resultSet.next()) {
               dataList.add(new Menu(
                       resultSet.getString("id"),
-                      resultSet.getString("nama_menu"),
-                      resultSet.getString("kategori"),
-                      resultSet.getDouble("harga"),
+                      resultSet.getString("name"),
+                      resultSet.getString("category"),
+                      resultSet.getDouble("price"),
                       resultSet.getInt("stok")
               ));
               table.setItems(dataList);
