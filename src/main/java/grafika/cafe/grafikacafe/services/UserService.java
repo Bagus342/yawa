@@ -1,6 +1,7 @@
 package grafika.cafe.grafikacafe.services;
 
 import grafika.cafe.grafikacafe.Main;
+import grafika.cafe.grafikacafe.connection.MysqlConnection;
 import grafika.cafe.grafikacafe.connection.SqliteConnection;
 import grafika.cafe.grafikacafe.session.Session;
 import grafika.cafe.grafikacafe.session.User;
@@ -60,7 +61,7 @@ public class UserService {
     }
 
     public String authenticate(String username, String password) {
-        connection = SqliteConnection.Connector();
+        connection = MysqlConnection.Connector();
         String result_username = "SELECT * FROM users WHERE username = ?";
         String result_password = "SELECT * FROM users WHERE password = ?";
         try {
@@ -89,6 +90,7 @@ public class UserService {
     }
 
     public User session(String username) {
+        connection = MysqlConnection.Connector();
         String query = "SELECT * FROM users WHERE username = ?";
         try {
             preparedStatement = connection.prepareStatement(query);

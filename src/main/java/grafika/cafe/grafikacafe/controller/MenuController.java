@@ -3,6 +3,7 @@ package grafika.cafe.grafikacafe.controller;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import grafika.cafe.grafikacafe.Main;
+import grafika.cafe.grafikacafe.connection.MysqlConnection;
 import grafika.cafe.grafikacafe.connection.SqliteConnection;
 import grafika.cafe.grafikacafe.controller.update.MenuUpdate;
 import grafika.cafe.grafikacafe.models.Menu;
@@ -25,6 +26,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ResourceBundle;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
 
 public class MenuController implements Initializable {
     Menu menuData = null;
@@ -90,7 +93,7 @@ public class MenuController implements Initializable {
                             try {
                                 menuData = table.getSelectionModel().getSelectedItem();
                                 var query = "DELETE FROM menu WHERE id = ?";
-                                var connection = SqliteConnection.Connector();
+                                var connection = MysqlConnection.Connector();
                                 preparedStatement = connection.prepareStatement(query);
                                 preparedStatement.setString(1, menuData.getId());
                                 preparedStatement.execute();
@@ -137,7 +140,7 @@ public class MenuController implements Initializable {
         dataList.clear();
         try {
           String query = "SELECT * FROM menu";
-          connection = SqliteConnection.Connector();
+          connection = MysqlConnection.Connector();
           preparedStatement = connection.prepareStatement(query);
           resultSet = preparedStatement.executeQuery();
           while (resultSet.next()) {
@@ -160,6 +163,13 @@ public class MenuController implements Initializable {
     public void createScene(ActionEvent event) {
         Main main = new Main();
         main.changeScene("manager/create/menuForm");
+    }
+
+    public void logout(ActionEvent event) throws BackingStoreException {
+        Main main = new Main();
+        main.changeScene("login");
+        Preferences preferences = Preferences.userRoot();
+        preferences.clear();
     }
 
     @Override

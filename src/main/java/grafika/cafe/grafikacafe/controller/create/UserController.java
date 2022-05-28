@@ -1,6 +1,7 @@
 package grafika.cafe.grafikacafe.controller.create;
 
 import grafika.cafe.grafikacafe.Main;
+import grafika.cafe.grafikacafe.connection.MysqlConnection;
 import grafika.cafe.grafikacafe.connection.SqliteConnection;
 import grafika.cafe.grafikacafe.controller.update.UserUpdate;
 import javafx.collections.FXCollections;
@@ -48,7 +49,7 @@ public class UserController implements Initializable {
 
     public void submitData(ActionEvent event) {
         Main main = new Main();
-        connection = SqliteConnection.Connector();
+        connection = MysqlConnection.Connector();
         String query = "INSERT INTO users (username, password, name, role) values (?,?,?,?)";
         if (name.getText().isEmpty() || username.getText().isEmpty() || password.getText().isEmpty() || role.getValue() == null) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -60,7 +61,7 @@ public class UserController implements Initializable {
                 var q_update = "UPDATE users set username = ?, password = ?, name = ?, role = ? WHERE id = ?";
                 PreparedStatement preparedStatement1 = null;
                 Connection connection1 = null;
-                connection1 = SqliteConnection.Connector();
+                connection1 = MysqlConnection.Connector();
                 try {
                     preparedStatement1 = connection1.prepareStatement(q_update);
                     preparedStatement1.setString(1, username.getText());

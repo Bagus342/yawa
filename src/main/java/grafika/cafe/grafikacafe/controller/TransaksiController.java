@@ -2,13 +2,17 @@ package grafika.cafe.grafikacafe.controller;
 
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import grafika.cafe.grafikacafe.Main;
+import grafika.cafe.grafikacafe.connection.MysqlConnection;
 import grafika.cafe.grafikacafe.connection.SqliteConnection;
 import grafika.cafe.grafikacafe.models.Stock;
 import grafika.cafe.grafikacafe.models.Transaksi;
 import grafika.cafe.grafikacafe.session.Session;
+import grafika.cafe.grafikacafe.utils.RandomCode;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
@@ -19,15 +23,14 @@ import javafx.scene.layout.HBox;
 import javafx.util.Callback;
 
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.sql.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.util.Date;
 import java.util.Objects;
 import java.util.ResourceBundle;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
 
 public class TransaksiController implements Initializable {
     Connection connection = null;
@@ -60,6 +63,9 @@ public class TransaksiController implements Initializable {
     public TableColumn<Transaksi, String> countColumn;
 
     @FXML
+    public TableColumn<Transaksi, String> kodeColumn;
+
+    @FXML
     public TableColumn<Transaksi, String> deleteColumn;
 
     @FXML
@@ -86,8 +92,10 @@ public class TransaksiController implements Initializable {
     @FXML
     public Label stock;
 
-    Integer count = 0;
+    Double priceValue = 0.0;
     Double totalValue = 0.0;
+    RandomCode randomCode = new RandomCode();
+    String code = randomCode.getCode();
     ObservableList<String> categoryItem = FXCollections.observableArrayList("Makanan", "Minuman");
     ObservableList<String> menuItem = FXCollections.observableArrayList();
     ObservableList<Transaksi> chartList = FXCollections.observableArrayList();
@@ -97,8 +105,19 @@ public class TransaksiController implements Initializable {
         category.setItems(categoryItem);
     }
 
+    public void setCashback() {
+        pay.textProperty().addListener(((observableValue, s, t1) -> {
+            if (!pay.getText().isEmpty()) {
+                var cashbackValue = Double.parseDouble(pay.getText()) - totalValue;
+                cashback.setText("Rp " + String.valueOf(cashbackValue));
+            } else {
+                cashback.setText("Rp ");
+            }
+        }));
+    }
+
     public void setMenuItem() {
-        connection = SqliteConnection.Connector();
+        connection = MysqlConnection.Connector();
         String query = "SELECT nama_menu FROM menu WHERE kategori = ?";
         menuItem.clear();
         try {
@@ -119,32 +138,36 @@ public class TransaksiController implements Initializable {
     }
 
     public void addChart(ActionEvent event) {
-        connection = SqliteConnection.Connector();
+        connection = MysqlConnection.Connector();
         String query = "SELECT * FROM menu WHERE nama_menu = ?";
+        String pesanan = "INSERT INTO pesanan (menu, quantity, subtotal, kode_pesanan) VALUES (?,?,?,?)";
         try {
             preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, menu.getValue());
             resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 var quantityValue = Double.parseDouble(quantity.getText());
-                var priceValue = resultSet.getDouble("harga");
+                var priceMenu = resultSet.getDouble("harga");
                 var subTotal = priceValue * quantityValue;
-                chartList.add(new Transaksi(
-                        count++,
-                        resultSet.getString("nama_menu"),
-                        Integer.parseInt(quantity.getText()),
-                        priceValue,
-                        subTotal
-                ));
-                table.setItems(chartList);
-                stock(menu.getValue());
-                setStockLabel(menu.getValue());
+                Connection connection3 = SqliteConnection.Connector();
+                PreparedStatement preparedStatement3 = connection3.prepareStatement(pesanan);
+                preparedStatement3.setString(1, menu.getValue());
+                preparedStatement3.setInt(2, Integer.parseInt(quantity.getText()));
+                preparedStatement3.setDouble(3, subTotal);
+                preparedStatement3.setString(4, code);
+                preparedStatement3.execute();
+                preparedStatement3.close();
+                preparedStatement.close();
+                resultSet.close();
+                priceValue = priceMenu;
+//                stock(menu.getValue());
+//                setStockLabel(menu.getValue());
                 category.setValue(null);
                 menu.setValue(null);
                 quantity.setText(null);
                 table();
                 totalValue += subTotal;
-                total.setText(String.valueOf(totalValue));
+                total.setText("Rp " + String.valueOf(totalValue));
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -153,7 +176,10 @@ public class TransaksiController implements Initializable {
 
     public void table() {
 
-        countColumn.setCellValueFactory(new PropertyValueFactory<>("count"));
+        refreshTable();
+
+        countColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+        kodeColumn.setCellValueFactory(new PropertyValueFactory<>("kode"));
         menuColumn.setCellValueFactory(new PropertyValueFactory<>("menuName"));
         quantityColumn.setCellValueFactory(new PropertyValueFactory<>("quantity"));
         priceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
@@ -173,16 +199,16 @@ public class TransaksiController implements Initializable {
 
                         deleteIcon.setOnMouseClicked((MouseEvent event) -> {
                             transaksi = table.getSelectionModel().getSelectedItem();
-                            chartList.forEach(items -> {
-                                if (transaksi.getCount().equals(items.count)) {
-                                    chartList.remove(items);
-                                    table.setItems(chartList);
-                                    totalValue -= items.subTotal;
-                                    total.setText(String.valueOf(totalValue));
-                                } else {
-                                    System.out.println(items.count);
-                                }
-                            });
+                            connection = MysqlConnection.Connector();
+                            String query = "DELETE from pesanan WHERE id = ?";
+                            try {
+                                preparedStatement = connection.prepareStatement(query);
+                                preparedStatement.setString(1, transaksi.getId());
+                                preparedStatement.execute();
+                                preparedStatement.close();
+                            } catch (Exception e) {
+                                System.out.println(e.getMessage());
+                            }
                         });
 
                         HBox hbox = new HBox(deleteIcon);
@@ -200,56 +226,109 @@ public class TransaksiController implements Initializable {
         table.setItems(chartList);
     }
 
-    public void setStockLabel(String menu) {
-        stockList.forEach(v -> {
-            if (v.name.equals(menu)) {
-                stock.setText("Tersedia " + String.valueOf(v.stock));
-            } else {
-                System.out.println(v.name);
-            }
-        });
+//    public void setStockLabel(String menu) {
+//        stockList.forEach(v -> {
+//            if (v.name.equals(menu)) {
+//                stock.setText("Tersedia " + String.valueOf(v.stock));
+//            } else {
+//                System.out.println(v.name);
+//            }
+//        });
+//    }
+
+//    public void stock(String menu) {
+//        String query = "SELECT stok FROM menu WHERE nama_menu = ?";
+//        Connection connection1 = SqliteConnection.Connector();
+//        try {
+//            PreparedStatement preparedStatement1 = connection1.prepareStatement(query);
+//            preparedStatement1.setString(1, menu);
+//            ResultSet resultSet1 = preparedStatement1.executeQuery();
+//            if (resultSet1.next()) {
+//                if (stockList.isEmpty()) {
+//                    System.out.println("asd");
+//                    stockList.add(new Stock(
+//                       menu,
+//                       resultSet1.getInt("stok")
+//                    ));
+//                } else {
+//                    System.out.println("dsa");
+//                    stockList.forEach(stockItem -> {
+//                        if (stockItem.name.equals(menu)) {
+//                            stockList.add(new Stock(
+//                                    menu,
+//                                    stockItem.stock -= Integer.parseInt(quantity.getText())
+//                            ));
+//                            stockList.remove(stockItem);
+//                        } else {
+//                            stockList.add(new Stock(
+//                                    menu,
+//                                    Integer.parseInt(quantity.getText())
+//                            ));
+//                        }
+//                    });
+//                }
+//            }
+//        } catch (Exception e) {
+//            System.out.println(e.getCause());
+//        }
+//    }
+
+    public void catatanScene(ActionEvent event) {
+        Main main = new Main();
     }
 
-    public void stock(String menu) {
-        String query = "SELECT stok FROM menu WHERE nama_menu = ?";
-        Connection connection1 = SqliteConnection.Connector();
+    public void submit(ActionEvent event) {
+        String transaksi = "INSERT INTO transaksi (user, pesanan, total, date, kode_transaksi) VALUES (?,?,?,?,?)";
+        Connection connection1 = MysqlConnection.Connector();
+        var session = Session.getSession();
         try {
-            PreparedStatement preparedStatement1 = connection1.prepareStatement(query);
-            preparedStatement1.setString(1, menu);
-            ResultSet resultSet1 = preparedStatement1.executeQuery();
-            if (resultSet1.next()) {
-                if (stockList.isEmpty()) {
-                    System.out.println("asd");
-                    stockList.add(new Stock(
-                       menu,
-                       resultSet1.getInt("stok")
-                    ));
-                } else {
-                    System.out.println("dsa");
-                    stockList.forEach(stockItem -> {
-                        if (stockItem.name.equals(menu)) {
-                            stockList.add(new Stock(
-                                    menu,
-                                    stockItem.stock -= Integer.parseInt(quantity.getText())
-                            ));
-                            stockList.remove(stockItem);
-                        } else {
-                            stockList.add(new Stock(
-                                    menu,
-                                    Integer.parseInt(quantity.getText())
-                            ));
-                        }
-                    });
-                }
-            }
+            PreparedStatement preparedStatement1 = connection1.prepareStatement(transaksi);
+            preparedStatement1.setString(1, session.name);
+            preparedStatement1.setString(2, code);
+            preparedStatement1.setDouble(3, totalValue);
+            preparedStatement1.setDate(4, Date.valueOf(LocalDate.now()));
+            preparedStatement1.setString(5, randomCode.getCode());
+            preparedStatement1.execute();
         } catch (Exception e) {
-            System.out.println(e.getCause());
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void logout(ActionEvent event) throws BackingStoreException {
+        Main main = new Main();
+        main.changeScene("login");
+        Preferences preferences = Preferences.userRoot();
+        preferences.clear();
+    }
+
+    public void refreshTable() {
+        Connection connection2 = MysqlConnection.Connector();
+        String query = "SELECT * FROM pesanan WHERE kode_pesanan = ?";
+        try {
+            PreparedStatement preparedStatement2 = connection2.prepareStatement(query);
+            preparedStatement2.setString(1, code);
+            ResultSet resultSet2 = preparedStatement2.executeQuery();
+            while(resultSet2.next()){
+                chartList.add(new Transaksi(
+                        resultSet2.getString("id"),
+                        resultSet2.getString("kode_pesanan"),
+                        resultSet2.getString("menu"),
+                        resultSet2.getInt("quantity"),
+                        priceValue,
+                        resultSet2.getDouble("subtotal")
+                ));
+                table.setItems(chartList);
+            }
+            preparedStatement2.close();
+            resultSet2.close();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
     }
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         this.setCategoryItem();
-        count = 0;
+        this.setCashback();
         var session = Session.getSession();
         var today = LocalDate.now();
         var format = today.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL));

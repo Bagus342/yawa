@@ -13,7 +13,7 @@
 
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="850.0" prefWidth="1545.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="grafika.cafe.grafikacafe.controller.create.UserController">
    <children>
-      <Pane layoutY="1.0" prefHeight="118.0" prefWidth="1546.0" style="-fx-background-color: gray;">
+      <Pane layoutY="1.0" prefHeight="118.0" prefWidth="1546.0" style="-fx-background-color: #1964E5;">
          <children>
             <Label alignment="CENTER" layoutX="2.0" layoutY="2.0" prefHeight="115.0" prefWidth="315.0" text="Tambah User" textFill="WHITE">
                <font>
@@ -104,12 +104,12 @@
             </HBox>
             <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0">
                <children>
-                  <Button onAction="#backScene" mnemonicParsing="false" prefHeight="52.0" prefWidth="142.0" style="-fx-background-radius: 10px;" text="Kembali">
+                  <Button mnemonicParsing="false" onAction="#backScene" prefHeight="52.0" prefWidth="142.0" style="-fx-background-radius: 10px;" text="Kembali">
                      <font>
                         <Font name="Dubai Bold" size="20.0" />
                      </font>
                   </Button>
-                  <Button onAction="#submitData" mnemonicParsing="false" prefHeight="52.0" prefWidth="142.0" style="-fx-background-radius: 10px;" text="Submit">
+                  <Button mnemonicParsing="false" onAction="#submitData" prefHeight="52.0" prefWidth="142.0" style="-fx-background-radius: 10px;" text="Submit">
                      <font>
                         <Font name="Dubai Bold" size="21.0" />
                      </font>

@@ -5,23 +5,25 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="850.0" prefWidth="1545.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="grafika.cafe.grafikacafe.services.UserService">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="850.0" prefWidth="1545.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="grafika.cafe.grafikacafe.services.UserService">
    <children>
-      <Pane layoutX="147.0" layoutY="105.0" prefHeight="608.0" prefWidth="608.0" style="-fx-border-color: black; -fx-border-radius: 20px;">
+      <Pane layoutX="147.0" layoutY="193.0" prefHeight="459.0" prefWidth="461.0" style="-fx-border-color: black; -fx-border-radius: 20px; -fx-background-color: white;">
          <children>
-            <VBox layoutX="1.0" layoutY="1.0" prefHeight="605.0" prefWidth="606.0" style="-fx-background-radius: 20px;">
+            <VBox layoutX="1.0" layoutY="1.0" prefHeight="458.0" prefWidth="459.0" style="-fx-background-radius: 20px;">
                <children>
                   <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Login">
                      <font>
                         <Font name="Calibri Bold" size="39.0" />
                      </font>
                      <VBox.margin>
-                        <Insets left="255.0" top="50.0" />
+                        <Insets left="180.0" top="50.0" />
                      </VBox.margin>
                   </Text>
                   <VBox prefHeight="72.0" prefWidth="606.0">
@@ -34,7 +36,7 @@
                               <Insets left="60.0" top="10.0" />
                            </VBox.margin>
                         </Text>
-                        <TextField fx:id="username" maxHeight="-Infinity" maxWidth="-Infinity" prefWidth="470.0" promptText="Username">
+                        <TextField fx:id="username" promptText="Username">
                            <VBox.margin>
                               <Insets left="60.0" top="10.0" />
                            </VBox.margin>
@@ -46,6 +48,9 @@
                      <VBox.margin>
                         <Insets top="50.0" />
                      </VBox.margin>
+                     <padding>
+                        <Insets right="50.0" />
+                     </padding>
                   </VBox>
                   <VBox prefHeight="89.0" prefWidth="606.0">
                      <children>
@@ -57,7 +62,7 @@
                               <Font name="Calibri" size="15.0" />
                            </font>
                         </Text>
-                        <PasswordField fx:id="password" maxWidth="-Infinity" prefWidth="470.0" promptText="Password">
+                        <PasswordField fx:id="password" prefWidth="470.0" promptText="Password">
                            <VBox.margin>
                               <Insets left="60.0" top="10.0" />
                            </VBox.margin>
@@ -69,6 +74,9 @@
                      <VBox.margin>
                         <Insets top="20.0" />
                      </VBox.margin>
+                     <padding>
+                        <Insets right="50.0" />
+                     </padding>
                   </VBox>
                   <Label fx:id="failureMessage" alignment="CENTER" prefHeight="15.0" prefWidth="224.0" textFill="RED">
                      <font>
@@ -78,17 +86,22 @@
                         <Insets left="180.0" />
                      </VBox.margin>
                   </Label>
-                  <Button onAction="#login" mnemonicParsing="false" text="Login">
+                  <Button mnemonicParsing="false" onAction="#login" prefHeight="31.0" prefWidth="82.0" style="-fx-background-color: #1964E5; -fx-background-radius: 5px;" text="Login" textFill="WHITE">
                      <font>
-                        <Font name="System Bold" size="13.0" />
+                        <Font name="System Bold" size="15.0" />
                      </font>
                      <VBox.margin>
-                        <Insets left="270.0" top="20.0" />
+                        <Insets left="180.0" top="20.0" />
                      </VBox.margin>
                   </Button>
                </children>
             </VBox>
          </children>
       </Pane>
+      <ImageView fitHeight="693.0" fitWidth="693.0" layoutX="758.0" layoutY="79.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@StyleSheet/logo_login.png" />
+         </image>
+      </ImageView>
    </children>
 </Pane>

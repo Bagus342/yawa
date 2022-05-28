@@ -3,6 +3,7 @@ package grafika.cafe.grafikacafe.controller;
 import de.jensd.fx.glyphs.GlyphsDude;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import grafika.cafe.grafikacafe.Main;
+import grafika.cafe.grafikacafe.connection.MysqlConnection;
 import grafika.cafe.grafikacafe.connection.SqliteConnection;
 import grafika.cafe.grafikacafe.controller.update.UserUpdate;
 import grafika.cafe.grafikacafe.models.UserData;
@@ -22,6 +23,8 @@ import java.net.URL;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ResourceBundle;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
 
 public class UserController implements Initializable {
     UserData userData = null;
@@ -88,7 +91,7 @@ public class UserController implements Initializable {
                             try {
                                 userData = table.getSelectionModel().getSelectedItem();
                                 var query = "DELETE FROM users WHERE id = ?";
-                                var connection = SqliteConnection.Connector();
+                                var connection = MysqlConnection.Connector();
                                 preparedStatement = connection.prepareStatement(query);
                                 preparedStatement.setString(1, userData.getId());
                                 preparedStatement.execute();
@@ -136,7 +139,7 @@ public class UserController implements Initializable {
             dataList.clear();
 
             var query = "SELECT * FROM users";
-            var connection = SqliteConnection.Connector();
+            var connection = MysqlConnection.Connector();
             preparedStatement = connection.prepareStatement(query);
             resultSet = preparedStatement.executeQuery();
 
@@ -161,6 +164,13 @@ public class UserController implements Initializable {
     public void createScene(ActionEvent event) {
         Main main = new Main();
         main.changeScene("admin/create/user");
+    }
+
+    public void logout(ActionEvent event) throws BackingStoreException {
+        Main main = new Main();
+        main.changeScene("login");
+        Preferences preferences = Preferences.userRoot();
+        preferences.clear();
     }
 
     @Override

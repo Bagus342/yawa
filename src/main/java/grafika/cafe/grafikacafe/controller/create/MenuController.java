@@ -1,6 +1,7 @@
 package grafika.cafe.grafikacafe.controller.create;
 
 import grafika.cafe.grafikacafe.Main;
+import grafika.cafe.grafikacafe.connection.MysqlConnection;
 import grafika.cafe.grafikacafe.connection.SqliteConnection;
 import grafika.cafe.grafikacafe.controller.update.MenuUpdate;
 import javafx.collections.FXCollections;
@@ -47,7 +48,7 @@ public class MenuController implements Initializable {
 
     public void submitData(ActionEvent event) {
         Main main = new Main();
-        connection = SqliteConnection.Connector();
+        connection = MysqlConnection.Connector();
         String query = "INSERT INTO menu (nama_menu, kategori, harga, stok) values (?,?,?,?)";
         if (name.getText().isEmpty() || kategori.getValue() == null || price.getText().isEmpty() || stock.getText().isEmpty()) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -59,7 +60,7 @@ public class MenuController implements Initializable {
                 var q_update = "UPDATE menu set nama_menu = ?, kategori = ?, harga = ?, stok = ? WHERE id = ?";
                 PreparedStatement preparedStatement1 = null;
                 Connection connection1 = null;
-                connection1 = SqliteConnection.Connector();
+                connection1 = MysqlConnection.Connector();
                 try {
                     preparedStatement1 = connection1.prepareStatement(q_update);
                     preparedStatement1.setString(1, name.getText());

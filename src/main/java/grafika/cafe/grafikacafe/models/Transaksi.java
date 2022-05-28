@@ -1,26 +1,36 @@
 package grafika.cafe.grafikacafe.models;
 
 public class Transaksi {
-    public Integer count;
+    public String id;
+    public String kode;
     public String menuName;
     public Integer quantity;
     public Double price;
     public Double subTotal;
 
-    public Transaksi(Integer count, String menuName, Integer quantity, Double price, Double subTotal) {
-        this.count = count;
+    public Transaksi(String id, String kode, String menuName, Integer quantity, Double price, Double subTotal) {
+        this.id = id;
+        this.kode = kode;
         this.menuName = menuName;
         this.quantity = quantity;
         this.price = price;
         this.subTotal = subTotal;
     }
 
-    public Integer getCount() {
-        return count;
+    public String getId() {
+        return id;
     }
 
-    public void setCount(Integer count) {
-        this.count = count;
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getKode(){
+        return kode;
+    }
+
+    public void setKode(String kode) {
+        this.kode = kode;
     }
 
     public String getMenuName() {
