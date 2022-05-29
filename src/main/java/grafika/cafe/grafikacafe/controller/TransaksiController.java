@@ -25,6 +25,7 @@ import javafx.util.Callback;
 import java.net.URL;
 import java.sql.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Objects;
@@ -103,6 +104,24 @@ public class TransaksiController implements Initializable {
 
     public void setCategoryItem() {
         category.setItems(categoryItem);
+    }
+
+    public void setLog() {
+        Connection connection = MysqlConnection.Connector();
+        var session = Session.getSession();
+        LocalDateTime localDateTime = LocalDateTime.now();
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+        String format = localDateTime.format(dateTimeFormatter);
+        String query = "INSERT INTO log (log, user, tanggal) VALUES (?,?,?)";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, "Telah Melakukan Aktifitas Transaksi");
+            preparedStatement.setString(2, session.name);
+            preparedStatement.setString(3, format);
+            preparedStatement.execute();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     public void setCashback() {
@@ -292,6 +311,7 @@ public class TransaksiController implements Initializable {
             preparedStatement1.setDouble(4, totalValue);
             preparedStatement1.setDate(5, Date.valueOf(LocalDate.now()));
             preparedStatement1.execute();
+            setLog();
             main.changeScene("kasir/catatan");
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -299,10 +319,25 @@ public class TransaksiController implements Initializable {
     }
 
     public void logout(ActionEvent event) throws BackingStoreException {
-        Main main = new Main();
-        main.changeScene("login");
-        Preferences preferences = Preferences.userRoot();
-        preferences.clear();
+        Connection connection = MysqlConnection.Connector();
+        var session = Session.getSession();
+        LocalDateTime localDateTime = LocalDateTime.now();
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+        String format = localDateTime.format(dateTimeFormatter);
+        String query = "INSERT INTO log (log, user, tanggal) VALUES (?,?,?)";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, "Telah Melakukan Logout");
+            preparedStatement.setString(2, session.name);
+            preparedStatement.setString(3, format);
+            preparedStatement.execute();
+            Main main = new Main();
+            main.changeScene("login");
+            Preferences preferences = Preferences.userRoot();
+            preferences.clear();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     public void refreshTable() {

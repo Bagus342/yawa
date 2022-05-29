@@ -36,7 +36,7 @@
                 <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
             </columnResizePolicy>
         </TableView>
-      <Button layoutX="1354.0" layoutY="793.0" mnemonicParsing="false" prefHeight="39.0" prefWidth="102.0" text="Kembali">
+      <Button layoutX="1354.0" onAction="#backScene" layoutY="793.0" mnemonicParsing="false" prefHeight="39.0" prefWidth="102.0" text="Kembali">
          <font>
             <Font name="Dubai Bold" size="15.0" />
          </font>

@@ -14,4 +14,24 @@ public class Detail {
         this.date = date;
         this.total = total;
     }
+
+    public String getCode() {
+        return code;
+    }
+
+    public String getMenu() {
+        return menu;
+    }
+
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public Double getTotal() {
+        return total;
+    }
 }

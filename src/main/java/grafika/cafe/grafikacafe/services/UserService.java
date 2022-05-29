@@ -14,6 +14,8 @@ import javafx.scene.control.TextField;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class UserService {
 
@@ -30,6 +32,24 @@ public class UserService {
     PreparedStatement preparedStatement = null;
     ResultSet resultSet = null;
 
+    public void setLog() {
+        Connection connection = MysqlConnection.Connector();
+        var session = Session.getSession();
+        LocalDateTime localDateTime = LocalDateTime.now();
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+        String format = localDateTime.format(dateTimeFormatter);
+        String query = "INSERT INTO log (log, user, tanggal) VALUES (?,?,?)";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, "Telah Melakukan Login");
+            preparedStatement.setString(2, session.name);
+            preparedStatement.setString(3, format);
+            preparedStatement.execute();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
     public void login(ActionEvent event) {
         Main main = new Main();
         try {
@@ -43,14 +63,17 @@ public class UserService {
                 if (session.role.equals("Admin")) {
                     User data = new User(session.name, session.role);
                     Session.setSession(data);
+                    setLog();
                     main.changeScene("admin/user");
                 } else if (session.role.equals("Manager")){
                     User data = new User(session.name, session.role);
                     Session.setSession(data);
+                    setLog();
                     main.changeScene("manager/menu");
                 } else {
                     User data = new User(session.name, session.role);
                     Session.setSession(data);
+                    setLog();
                     main.changeScene("kasir/transaksi");
                 }
 

@@ -64,7 +64,7 @@
                         <Insets top="15.0" />
                     </VBox.margin>
                 </Button>
-            <Button layoutX="10.0" layoutY="169.0" mnemonicParsing="false" prefHeight="82.0" prefWidth="255.0" style="-fx-background-color: transparent;" text="Catatan" textFill="WHITE">
+            <Button layoutX="10.0" onAction="#catatanScene" layoutY="169.0" mnemonicParsing="false" prefHeight="82.0" prefWidth="255.0" style="-fx-background-color: transparent;" text="Catatan" textFill="WHITE">
                <font>
                   <Font name="Dubai Bold" size="20.0" />
                </font>
@@ -72,7 +72,7 @@
                   <Insets top="15.0" />
                </VBox.margin>
             </Button>
-            <Button layoutX="10.0" layoutY="267.0" mnemonicParsing="false" prefHeight="82.0" prefWidth="255.0" style="-fx-background-color: transparent;" text="Pendapatan" textFill="WHITE">
+            <Button layoutX="10.0" onAction="#pendapatanScene" layoutY="267.0" mnemonicParsing="false" prefHeight="82.0" prefWidth="255.0" style="-fx-background-color: transparent;" text="Pendapatan" textFill="WHITE">
                <font>
                   <Font name="Dubai Bold" size="20.0" />
                </font>

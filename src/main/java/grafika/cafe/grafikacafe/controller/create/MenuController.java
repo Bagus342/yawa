@@ -4,6 +4,7 @@ import grafika.cafe.grafikacafe.Main;
 import grafika.cafe.grafikacafe.connection.MysqlConnection;
 import grafika.cafe.grafikacafe.connection.SqliteConnection;
 import grafika.cafe.grafikacafe.controller.update.MenuUpdate;
+import grafika.cafe.grafikacafe.session.Session;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -17,6 +18,8 @@ import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
 import java.util.prefs.Preferences;
 
@@ -46,6 +49,32 @@ public class MenuController implements Initializable {
         kategori.setItems(categoryItem);
     }
 
+    public void setLog() {
+        Connection connection = MysqlConnection.Connector();
+        var session = Session.getSession();
+        LocalDateTime localDateTime = LocalDateTime.now();
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+        String format = localDateTime.format(dateTimeFormatter);
+        String query = "INSERT INTO log (log, user, tanggal) VALUES (?,?,?)";
+        try {
+            if (update) {
+                PreparedStatement preparedStatement = connection.prepareStatement(query);
+                preparedStatement.setString(1, "Telah Melakukan Update Menu");
+                preparedStatement.setString(2, session.name);
+                preparedStatement.setString(3, format);
+                preparedStatement.execute();
+            } else {
+                PreparedStatement preparedStatement = connection.prepareStatement(query);
+                preparedStatement.setString(1, "Telah Melakukan Tambah Menu");
+                preparedStatement.setString(2, session.name);
+                preparedStatement.setString(3, format);
+                preparedStatement.execute();
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
     public void submitData(ActionEvent event) {
         Main main = new Main();
         connection = MysqlConnection.Connector();
@@ -71,8 +100,13 @@ public class MenuController implements Initializable {
                     preparedStatement1.execute();
                     preparedStatement1.close();
                     connection1.close();
+                    setLog();
                     Preferences preferences = Preferences.userRoot();
-                    preferences.clear();
+                    preferences.remove("id");
+                    preferences.remove("menu");
+                    preferences.remove("category");
+                    preferences.remove("price");
+                    preferences.remove("stock");
                     main.changeScene("manager/menu");
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
@@ -87,8 +121,7 @@ public class MenuController implements Initializable {
                     preparedStatement.execute();
                     preparedStatement.close();
                     connection.close();
-                    Preferences preferences = Preferences.userRoot();
-                    preferences.clear();
+                    setLog();
                     clearForm();
                     main.changeScene("manager/menu");
                 } catch (Exception e) {
